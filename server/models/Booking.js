@@ -38,6 +38,10 @@ const bookingSchema = new mongoose.Schema(
       ref:     "Payment",
       default: null,
     },
+    cancelReason: {
+      type:    String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
