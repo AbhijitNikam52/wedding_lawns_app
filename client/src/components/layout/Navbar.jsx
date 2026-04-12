@@ -52,9 +52,14 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {/* User avatar + logout */}
+                {/* User avatar + links */}
                 <div className="flex items-center gap-3">
-                  <span className="text-secondary">👤 {user?.name}</span>
+                  <Link
+                    to="/profile"
+                    className="text-secondary hover:text-white transition-colors font-medium"
+                  >
+                    👤 {user?.name}
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="bg-primary hover:bg-opacity-80 text-white px-4 py-1.5 rounded-lg text-sm transition-all"

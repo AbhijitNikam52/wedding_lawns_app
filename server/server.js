@@ -16,13 +16,13 @@ const connectDB      = require("./config/db");
 const errorHandler   = require("./middleware/errorHandler");
 
 // Route files
-const authRoutes  = require("./routes/authRoutes");
-const lawnRoutes  = require("./routes/lawnRoutes");
+const authRoutes   = require("./routes/authRoutes");
+const lawnRoutes   = require("./routes/lawnRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 // Future routes (uncomment as you build each day):
 // const bookingRoutes  = require("./routes/bookingRoutes");
 // const chatRoutes     = require("./routes/chatRoutes");
 // const paymentRoutes  = require("./routes/paymentRoutes");
-// const uploadRoutes   = require("./routes/uploadRoutes");
 
 // ─── Connect to MongoDB ───────────────────────────────────
 connectDB();
@@ -99,6 +99,7 @@ app.get("/", (req, res) => {
 // ─── API Routes ───────────────────────────────────────────
 app.use("/api/auth",     authRoutes);
 app.use("/api/lawns",    lawnRoutes);
+app.use("/api/upload",   uploadRoutes);
 // app.use("/api/bookings", bookingRoutes);   // Day 10
 // app.use("/api/chat",     chatRoutes);      // Day 12
 // app.use("/api/payment",  paymentRoutes);   // Day 14
