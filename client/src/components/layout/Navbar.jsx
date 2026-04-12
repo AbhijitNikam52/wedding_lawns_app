@@ -33,9 +33,14 @@ const Navbar = () => {
               <>
                 {/* Owner links */}
                 {isOwner && (
-                  <Link to="/dashboard/owner" className="hover:text-secondary transition-colors">
-                    My Dashboard
-                  </Link>
+                  <>
+                    <Link to="/dashboard/owner" className="hover:text-secondary transition-colors">
+                      My Dashboard
+                    </Link>
+                    <Link to="/bookings/owner" className="hover:text-secondary transition-colors">
+                      Bookings
+                    </Link>
+                  </>
                 )}
 
                 {/* Admin links */}

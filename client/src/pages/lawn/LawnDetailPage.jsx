@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchLawnById } from "../../services/lawnService";
 import { useAuth } from "../../context/AuthContext";
+import AvailabilityCalendar from "../../components/ui/AvailabilityCalendar";
 import Spinner from "../../components/ui/Spinner";
 
 const AMENITY_ICONS = {
@@ -18,6 +19,7 @@ const LawnDetailPage = () => {
   const [loading,   setLoading]   = useState(true);
   const [photoIdx,  setPhotoIdx]  = useState(0);
   const [notFound,  setNotFound]  = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -183,18 +185,41 @@ const LawnDetailPage = () => {
             </div>
 
             {isAuthenticated && user?.role === "user" ? (
-              <div className="space-y-3">
-                {/* Book Now — Day 9 will wire the calendar */}
+              <div className="space-y-4">
+                {/* Availability Calendar */}
+                <div>
+                  <p className="text-sm font-semibold text-dark mb-2">
+                    📅 Select Your Event Date
+                  </p>
+                  <AvailabilityCalendar
+                    lawnId={id}
+                    selectedDate={selectedDate}
+                    onDateSelect={setSelectedDate}
+                  />
+                </div>
+
+                {selectedDate && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm">
+                    <p className="font-semibold text-green-700">
+                      ✅ Selected: {new Date(selectedDate).toDateString()}
+                    </p>
+                  </div>
+                )}
+
                 <button
-                  onClick={() => navigate(`/lawns/${id}/book`)}
-                  className="btn-primary w-full py-3 text-base"
+                  onClick={() =>
+                    selectedDate &&
+                    navigate(`/lawns/${id}/book?date=${selectedDate}`)
+                  }
+                  disabled={!selectedDate}
+                  className="btn-primary w-full py-3 text-base disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  📅 Check Availability & Book
+                  {selectedDate ? "Book This Date →" : "Select a Date Above"}
                 </button>
-                {/* Chat with Owner — Day 13 */}
+
                 <Link
                   to={`/chat/${id}`}
-                  className="btn-outline w-full py-3 text-base text-center block"
+                  className="btn-outline w-full py-2.5 text-sm text-center block"
                 >
                   💬 Chat with Owner
                 </Link>

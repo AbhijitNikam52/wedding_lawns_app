@@ -16,8 +16,11 @@ import LawnListPage   from "./pages/lawn/LawnListPage";
 import LawnDetailPage from "./pages/lawn/LawnDetailPage";
 import CreateLawnPage from "./pages/lawn/CreateLawnPage";
 import EditLawnPage   from "./pages/lawn/EditLawnPage";
+import BookingPage             from "./pages/booking/BookingPage";
+import BookingConfirmationPage  from "./pages/booking/BookingConfirmationPage";
+import MyBookingsPage           from "./pages/booking/MyBookingsPage";
+import OwnerBookingsPage        from "./pages/booking/OwnerBookingsPage";
 import {
-  MyBookingsPage,
   ChatPage,
   OwnerDashboardPage,
   AdminPage,
@@ -61,29 +64,23 @@ const App = () => {
           {/* ── User Protected Routes ─────────────────── */}
           <Route
             path="/profile"
-            element={
-              <PrivateRoute>
-                <ProfilePage />
-              </PrivateRoute>
-            }
+            element={<PrivateRoute><ProfilePage /></PrivateRoute>}
           />
           <Route
             path="/change-password"
-            element={
-              <PrivateRoute>
-                <ChangePasswordPage />
-              </PrivateRoute>
-            }
+            element={<PrivateRoute><ChangePasswordPage /></PrivateRoute>}
           />
-
-          {/* ── User Protected Routes ─────────────────── */}
           <Route
             path="/bookings/my"
-            element={
-              <PrivateRoute>
-                <MyBookingsPage />
-              </PrivateRoute>
-            }
+            element={<PrivateRoute><MyBookingsPage /></PrivateRoute>}
+          />
+          <Route
+            path="/lawns/:id/book"
+            element={<PrivateRoute role="user"><BookingPage /></PrivateRoute>}
+          />
+          <Route
+            path="/bookings/:id/confirmation"
+            element={<PrivateRoute><BookingConfirmationPage /></PrivateRoute>}
           />
           <Route
             path="/chat/:lawnId"
@@ -97,11 +94,11 @@ const App = () => {
           {/* ── Owner Protected Routes ────────────────── */}
           <Route
             path="/dashboard/owner"
-            element={
-              <PrivateRoute role="owner">
-                <OwnerDashboardPage />
-              </PrivateRoute>
-            }
+            element={<PrivateRoute role="owner"><OwnerDashboardPage /></PrivateRoute>}
+          />
+          <Route
+            path="/bookings/owner"
+            element={<PrivateRoute role="owner"><OwnerBookingsPage /></PrivateRoute>}
           />
 
           {/* ── Admin Protected Routes ────────────────── */}
