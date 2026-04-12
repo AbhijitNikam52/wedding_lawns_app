@@ -6,11 +6,17 @@ import PrivateRoute from "./components/PrivateRoute";
 
 // Pages
 import HomePage    from "./pages/HomePage";
-import LoginPage   from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
+import LoginPage          from "./pages/auth/LoginPage";
+import RegisterPage        from "./pages/auth/RegisterPage";
+import ForgotPasswordPage  from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage   from "./pages/auth/ResetPasswordPage";
+import ChangePasswordPage  from "./pages/auth/ChangePasswordPage";
+import ProfilePage         from "./pages/auth/ProfilePage";
+import LawnListPage   from "./pages/lawn/LawnListPage";
+import LawnDetailPage from "./pages/lawn/LawnDetailPage";
+import CreateLawnPage from "./pages/lawn/CreateLawnPage";
+import EditLawnPage   from "./pages/lawn/EditLawnPage";
 import {
-  LawnListPage,
-  LawnDetailPage,
   MyBookingsPage,
   ChatPage,
   OwnerDashboardPage,
@@ -26,11 +32,49 @@ const App = () => {
       <main className="flex-grow">
         <Routes>
           {/* ── Public Routes ─────────────────────────── */}
-          <Route path="/"          element={<HomePage />} />
-          <Route path="/login"     element={<LoginPage />} />
-          <Route path="/register"  element={<RegisterPage />} />
-          <Route path="/lawns"     element={<LawnListPage />} />
-          <Route path="/lawns/:id" element={<LawnDetailPage />} />
+          <Route path="/"                element={<HomePage />} />
+          <Route path="/login"           element={<LoginPage />} />
+          <Route path="/register"        element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password"  element={<ResetPasswordPage />} />
+          <Route path="/lawns"           element={<LawnListPage />} />
+          <Route path="/lawns/:id"       element={<LawnDetailPage />} />
+
+          {/* ── Owner Protected Routes ────────────────── */}
+          <Route
+            path="/lawns/create"
+            element={
+              <PrivateRoute role="owner">
+                <CreateLawnPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/lawns/:id/edit"
+            element={
+              <PrivateRoute role="owner">
+                <EditLawnPage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* ── User Protected Routes ─────────────────── */}
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/change-password"
+            element={
+              <PrivateRoute>
+                <ChangePasswordPage />
+              </PrivateRoute>
+            }
+          />
 
           {/* ── User Protected Routes ─────────────────── */}
           <Route
