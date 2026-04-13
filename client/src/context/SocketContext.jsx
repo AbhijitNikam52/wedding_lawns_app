@@ -10,24 +10,29 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Connect to Socket.io server when user logs in
+      const token = localStorage.getItem("token");
+
+      // Pass JWT in handshake so server can verify the user
       const newSocket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5000", {
         withCredentials: true,
+        auth: { token },
       });
 
       newSocket.on("connect", () => {
         console.log("🔌 Socket connected:", newSocket.id);
       });
 
+      newSocket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message);
+      });
+
       setSocket(newSocket);
 
-      // Disconnect when user logs out
       return () => {
         newSocket.disconnect();
         console.log("❌ Socket disconnected");
       };
     } else {
-      // Not authenticated — make sure socket is null
       setSocket(null);
     }
   }, [isAuthenticated]);

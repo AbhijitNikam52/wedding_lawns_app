@@ -21,9 +21,10 @@ const lawnRoutes         = require("./routes/lawnRoutes");
 const uploadRoutes       = require("./routes/uploadRoutes");
 const availabilityRoutes = require("./routes/availabilityRoutes");
 const bookingRoutes      = require("./routes/bookingRoutes");
-// Future routes:
-// const chatRoutes     = require("./routes/chatRoutes");
-// const paymentRoutes  = require("./routes/paymentRoutes");
+const chatRoutes         = require("./routes/chatRoutes");
+const paymentRoutes      = require("./routes/paymentRoutes");
+const adminRoutes        = require("./routes/adminRoutes");
+const initSocket         = require("./socket/socketHandler");
 
 // ─── Connect to MongoDB ───────────────────────────────────
 connectDB();
@@ -35,31 +36,15 @@ const server = http.createServer(app);   // HTTP server (needed for Socket.io)
 // ─── Socket.io Setup ─────────────────────────────────────
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin:  process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
 
-// Socket.io connection handler (Day 12 — chat feature)
-io.on("connection", (socket) => {
-  console.log(`🔌 Socket connected: ${socket.id}`);
+// Initialise all socket events from dedicated handler
+initSocket(io);
 
-  socket.on("join_room", ({ room }) => {
-    socket.join(room);
-    console.log(`📦 User joined room: ${room}`);
-  });
-
-  socket.on("send_message", (data) => {
-    // Broadcast to everyone in the room except sender
-    socket.to(data.lawnId).emit("receive_message", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`❌ Socket disconnected: ${socket.id}`);
-  });
-});
-
-// Attach io to req so controllers can use it
+// Attach io to req so controllers can emit events
 app.use((req, res, next) => {
   req.io = io;
   next();
@@ -103,6 +88,9 @@ app.use("/api/lawns",        lawnRoutes);
 app.use("/api/upload",       uploadRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/bookings",     bookingRoutes);
+app.use("/api/chat",         chatRoutes);
+app.use("/api/payment",      paymentRoutes);
+app.use("/api/admin",        adminRoutes);
 // app.use("/api/bookings", bookingRoutes);   // Day 10
 // app.use("/api/chat",     chatRoutes);      // Day 12
 // app.use("/api/payment",  paymentRoutes);   // Day 14
