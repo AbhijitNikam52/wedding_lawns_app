@@ -20,12 +20,14 @@ import BookingPage             from "./pages/booking/BookingPage";
 import BookingConfirmationPage  from "./pages/booking/BookingConfirmationPage";
 import MyBookingsPage           from "./pages/booking/MyBookingsPage";
 import OwnerBookingsPage        from "./pages/booking/OwnerBookingsPage";
-import {
-  ChatPage,
-  OwnerDashboardPage,
-  AdminPage,
-  NotFoundPage,
-} from "./pages/PlaceholderPages";
+import ChatPage from "./pages/chat/ChatPage";
+import PaymentPage        from "./pages/payment/PaymentPage";
+import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
+import PaymentFailurePage from "./pages/payment/PaymentFailurePage";
+import PaymentHistoryPage from "./pages/payment/PaymentHistoryPage";
+import OwnerDashboardPage from "./pages/dashboard/OwnerDashboardPage";
+import AdminPage from "./pages/admin/AdminPage";
+import { NotFoundPage } from "./pages/PlaceholderPages";
 
 const App = () => {
   return (
@@ -79,16 +81,32 @@ const App = () => {
             element={<PrivateRoute role="user"><BookingPage /></PrivateRoute>}
           />
           <Route
+            path="/bookings/:id/pay"
+            element={<PrivateRoute role="user"><PaymentPage /></PrivateRoute>}
+          />
+          <Route
+            path="/payment/success"
+            element={<PrivateRoute><PaymentSuccessPage /></PrivateRoute>}
+          />
+          <Route
+            path="/payment/failure"
+            element={<PrivateRoute><PaymentFailurePage /></PrivateRoute>}
+          />
+          <Route
+            path="/payment/history"
+            element={<PrivateRoute><PaymentHistoryPage /></PrivateRoute>}
+          />
+          <Route
             path="/bookings/:id/confirmation"
             element={<PrivateRoute><BookingConfirmationPage /></PrivateRoute>}
           />
           <Route
+            path="/chat"
+            element={<PrivateRoute><ChatPage /></PrivateRoute>}
+          />
+          <Route
             path="/chat/:lawnId"
-            element={
-              <PrivateRoute>
-                <ChatPage />
-              </PrivateRoute>
-            }
+            element={<PrivateRoute><ChatPage /></PrivateRoute>}
           />
 
           {/* ── Owner Protected Routes ────────────────── */}

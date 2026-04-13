@@ -40,6 +40,9 @@ const Navbar = () => {
                     <Link to="/bookings/owner" className="hover:text-secondary transition-colors">
                       Bookings
                     </Link>
+                    <Link to="/chat" className="hover:text-secondary transition-colors">
+                      Messages
+                    </Link>
                   </>
                 )}
 
@@ -52,9 +55,17 @@ const Navbar = () => {
 
                 {/* User links */}
                 {!isOwner && !isAdmin && (
-                  <Link to="/bookings/my" className="hover:text-secondary transition-colors">
-                    My Bookings
-                  </Link>
+                  <>
+                    <Link to="/bookings/my" className="hover:text-secondary transition-colors">
+                      My Bookings
+                    </Link>
+                    <Link to="/chat" className="hover:text-secondary transition-colors">
+                      Messages
+                    </Link>
+                    <Link to="/payment/history" className="hover:text-secondary transition-colors">
+                      Payments
+                    </Link>
+                  </>
                 )}
 
                 {/* User avatar + links */}

@@ -4,7 +4,7 @@ import BookingStatusBadge from "../../components/ui/BookingStatusBadge";
 import Spinner from "../../components/ui/Spinner";
 import toast from "react-hot-toast";
 
-const OwnerBookingsPage = () => {
+const OwnerBookingsPage = ({ embedded = false }) => {
   const [bookings,   setBookings]   = useState([]);
   const [loading,    setLoading]    = useState(true);
   const [filter,     setFilter]     = useState("pending");
@@ -47,13 +47,13 @@ const OwnerBookingsPage = () => {
   const STATUS_FILTERS = ["pending", "confirmed", "cancelled", "completed", "all"];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-dark">📋 Booking Requests</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Manage all booking requests for your lawns
-        </p>
-      </div>
+    <div className={embedded ? "" : "max-w-5xl mx-auto px-4 py-10"}>
+      {!embedded && (
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-dark">📋 Booking Requests</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage all booking requests for your lawns</p>
+        </div>
+      )}
 
       {/* Filter tabs */}
       <div className="flex gap-2 flex-wrap mb-6">
