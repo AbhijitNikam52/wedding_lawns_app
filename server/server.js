@@ -14,6 +14,8 @@ const rateLimit  = require("express-rate-limit");
 
 const connectDB      = require("./config/db");
 const errorHandler   = require("./middleware/errorHandler");
+const notFound       = require("./middleware/notFound");
+const sanitize       = require("./middleware/sanitize");
 
 // Route files
 const authRoutes         = require("./routes/authRoutes");
@@ -51,20 +53,39 @@ app.use((req, res, next) => {
 });
 
 // ─── Security Middleware ──────────────────────────────────
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // allow images from Cloudinary
+    contentSecurityPolicy: false,                           // handled by frontend
+  })
+);
 
-// Rate limiting: max 100 requests per 15 minutes per IP
+// NoSQL injection sanitization
+app.use(sanitize);
+
+// Rate limiting: 100 requests per 15 minutes per IP
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max:      100,
-  message:  { message: "Too many requests, please try again later." },
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message: { success: false, message: "Too many requests, please try again later." },
+  skip: (req) => req.method === "OPTIONS", // skip preflight
 });
 app.use("/api", limiter);
 
 // ─── CORS ─────────────────────────────────────────────────
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin:      process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, cb) => {
+      // Allow non-browser requests (Postman, curl) and listed origins
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
   })
 );
@@ -96,12 +117,8 @@ app.use("/api/admin",        adminRoutes);
 // app.use("/api/payment",  paymentRoutes);   // Day 14
 // app.use("/api/upload",   uploadRoutes);    // Day 7
 
-// ─── 404 Handler ──────────────────────────────────────────
-app.use((req, res) => {
-  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
-});
-
-// ─── Global Error Handler (must be last) ─────────────────
+// ─── 404 & Global Error Handler ──────────────────────────
+app.use(notFound);
 app.use(errorHandler);
 
 // ─── Start Server ─────────────────────────────────────────
