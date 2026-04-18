@@ -3,7 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchLawnById } from "../../services/lawnService";
 import { useAuth } from "../../context/AuthContext";
 import AvailabilityCalendar from "../../components/ui/AvailabilityCalendar";
-import Spinner from "../../components/ui/Spinner";
+import LazyImage     from "../../components/ui/LazyImage";
+import SkeletonDetail from "../../components/ui/SkeletonDetail";
 
 const AMENITY_ICONS = {
   AC: "❄️", Parking: "🚗", Catering: "🍽️", Generator: "⚡",
@@ -35,7 +36,7 @@ const LawnDetailPage = () => {
     load();
   }, [id]);
 
-  if (loading) return <Spinner text="Loading venue details..." />;
+  if (loading) return <SkeletonDetail />;
 
   if (notFound) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -72,9 +73,10 @@ const LawnDetailPage = () => {
               <>
                 {/* Main photo */}
                 <div className="relative h-80 sm:h-96">
-                  <img
+                  <LazyImage
                     src={photos[photoIdx]}
                     alt={`${lawn.name} photo ${photoIdx + 1}`}
+                    wrapperClass="w-full h-full"
                     className="w-full h-full object-cover"
                   />
                   {photos.length > 1 && (

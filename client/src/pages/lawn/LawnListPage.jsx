@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { fetchLawns } from "../../services/lawnService";
-import LawnCard    from "../../components/ui/LawnCard";
-import SearchFilter from "../../components/ui/SearchFilter";
-import Pagination  from "../../components/ui/Pagination";
-import Spinner     from "../../components/ui/Spinner";
+import LawnCard      from "../../components/ui/LawnCard";
+import SearchFilter  from "../../components/ui/SearchFilter";
+import Pagination    from "../../components/ui/Pagination";
+import { SkeletonGrid } from "../../components/ui/SkeletonCard";
 
 const LawnListPage = () => {
   const [lawns,   setLawns]   = useState([]);
@@ -61,7 +61,7 @@ const LawnListPage = () => {
 
       {/* Results */}
       {loading ? (
-        <Spinner text="Finding beautiful venues..." />
+        <SkeletonGrid count={12} />
       ) : lawns.length === 0 ? (
         <EmptyState />
       ) : (

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useDebounce from "../../hooks/useDebounce";
 
 const AMENITY_OPTIONS = [
   "AC", "Parking", "Catering", "Generator", "Sound System", "Decoration", "Swimming", "Garden",
@@ -12,7 +13,29 @@ const SearchFilter = ({ onFilter, loading }) => {
     minCapacity: "",
     amenities:   [],
   });
-  const [open, setOpen] = useState(false); // mobile toggle
+  const [open, setOpen] = useState(false);
+
+  // Debounce city input — triggers search 400ms after user stops typing
+  const debouncedCity = useDebounce(filters.city, 400);
+
+  // Auto-search when debounced city changes (but not on initial mount)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    if (!mounted) { setMounted(true); return; }
+    const params = buildParams({ ...filters, city: debouncedCity });
+    onFilter(params);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedCity]);
+
+  const buildParams = (f) => {
+    const params = {};
+    if (f.city)        params.city        = f.city;
+    if (f.minPrice)    params.minPrice    = f.minPrice;
+    if (f.maxPrice)    params.maxPrice    = f.maxPrice;
+    if (f.minCapacity) params.minCapacity = f.minCapacity;
+    if (f.amenities?.length) params.amenities = f.amenities.join(",");
+    return params;
+  };
 
   const handleChange = (e) =>
     setFilters((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -27,13 +50,7 @@ const SearchFilter = ({ onFilter, loading }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const params = {};
-    if (filters.city)        params.city        = filters.city;
-    if (filters.minPrice)    params.minPrice    = filters.minPrice;
-    if (filters.maxPrice)    params.maxPrice    = filters.maxPrice;
-    if (filters.minCapacity) params.minCapacity = filters.minCapacity;
-    if (filters.amenities.length) params.amenities = filters.amenities.join(",");
-    onFilter(params);
+    onFilter(buildParams(filters));
   };
 
   const handleReset = () => {
