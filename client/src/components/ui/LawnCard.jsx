@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import LazyImage from "./LazyImage";
 
 const AMENITY_ICONS = {
   AC:            "❄️",
@@ -33,17 +34,13 @@ const LawnCard = ({ lawn }) => {
     >
       {/* Image */}
       <div className="relative h-48 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden flex-shrink-0">
-        {thumbnail ? (
-          <img
-            src={thumbnail}
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl">
-            🏡
-          </div>
-        )}
+        <LazyImage
+          src={thumbnail}
+          alt={name}
+          fallback="🏡"
+          wrapperClass="w-full h-full"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
         {/* Price badge */}
         <div className="absolute top-3 right-3 bg-dark text-secondary text-xs font-bold px-3 py-1 rounded-full">
           ₹{pricePerDay?.toLocaleString()}/day

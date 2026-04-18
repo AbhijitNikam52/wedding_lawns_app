@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar       from "./components/layout/Navbar";
 import Footer       from "./components/layout/Footer";
 import PrivateRoute from "./components/PrivateRoute";
+import ScrollToTop  from "./components/ui/ScrollToTop";
 
 // Pages
 import HomePage    from "./pages/HomePage";
@@ -35,8 +36,7 @@ const App = () => {
       <Navbar />
 
       <main className="flex-grow">
-        <Routes>
-          {/* ── Public Routes ─────────────────────────── */}
+        <Routes>          {/* ── Public Routes ─────────────────────────── */}
           <Route path="/"                element={<HomePage />} />
           <Route path="/login"           element={<LoginPage />} />
           <Route path="/register"        element={<RegisterPage />} />
@@ -135,6 +135,7 @@ const App = () => {
       </main>
 
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };
