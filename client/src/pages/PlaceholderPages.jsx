@@ -60,13 +60,25 @@ export const AdminPage = () => (
   </div>
 );
 
+import { Link } from "react-router-dom";
+
 export const NotFoundPage = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="card text-center">
-      <div className="text-6xl mb-4">404</div>
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 px-4">
+    <div className="max-w-md w-full text-center">
+      <div className="text-8xl font-bold text-primary opacity-20 mb-4">404</div>
+      <div className="text-5xl mb-4">🔍</div>
       <h2 className="text-2xl font-bold text-dark mb-2">Page Not Found</h2>
-      <p className="text-gray-500 mb-6">The page you are looking for does not exist.</p>
-      <a href="/" className="btn-primary">Go Home</a>
+      <p className="text-gray-500 text-sm mb-8">
+        The page you are looking for doesn't exist or has been moved.
+      </p>
+      <div className="flex gap-3 justify-center">
+        <Link to="/" className="btn-primary px-8">
+          Go Home
+        </Link>
+        <Link to="/lawns" className="btn-outline px-8">
+          Browse Lawns
+        </Link>
+      </div>
     </div>
   </div>
 );

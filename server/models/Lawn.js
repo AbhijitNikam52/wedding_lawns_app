@@ -58,4 +58,10 @@ const lawnSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for faster search queries
+lawnSchema.index({ city: 1 });
+lawnSchema.index({ pricePerDay: 1 });
+lawnSchema.index({ isApproved: 1 });
+lawnSchema.index({ ownerId: 1 });
+
 module.exports = mongoose.model("Lawn", lawnSchema);

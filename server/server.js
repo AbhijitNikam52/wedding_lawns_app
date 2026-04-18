@@ -14,15 +14,19 @@ const rateLimit  = require("express-rate-limit");
 
 const connectDB      = require("./config/db");
 const errorHandler   = require("./middleware/errorHandler");
+const notFound       = require("./middleware/notFound");
+const sanitize       = require("./middleware/sanitize");
 
 // Route files
-const authRoutes  = require("./routes/authRoutes");
-const lawnRoutes  = require("./routes/lawnRoutes");
-// Future routes (uncomment as you build each day):
-// const bookingRoutes  = require("./routes/bookingRoutes");
-// const chatRoutes     = require("./routes/chatRoutes");
-// const paymentRoutes  = require("./routes/paymentRoutes");
-// const uploadRoutes   = require("./routes/uploadRoutes");
+const authRoutes         = require("./routes/authRoutes");
+const lawnRoutes         = require("./routes/lawnRoutes");
+const uploadRoutes       = require("./routes/uploadRoutes");
+const availabilityRoutes = require("./routes/availabilityRoutes");
+const bookingRoutes      = require("./routes/bookingRoutes");
+const chatRoutes         = require("./routes/chatRoutes");
+const paymentRoutes      = require("./routes/paymentRoutes");
+const adminRoutes        = require("./routes/adminRoutes");
+const initSocket         = require("./socket/socketHandler");
 
 // ─── Connect to MongoDB ───────────────────────────────────
 connectDB();
@@ -34,51 +38,54 @@ const server = http.createServer(app);   // HTTP server (needed for Socket.io)
 // ─── Socket.io Setup ─────────────────────────────────────
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin:  process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
 
-// Socket.io connection handler (Day 12 — chat feature)
-io.on("connection", (socket) => {
-  console.log(`🔌 Socket connected: ${socket.id}`);
+// Initialise all socket events from dedicated handler
+initSocket(io);
 
-  socket.on("join_room", ({ room }) => {
-    socket.join(room);
-    console.log(`📦 User joined room: ${room}`);
-  });
-
-  socket.on("send_message", (data) => {
-    // Broadcast to everyone in the room except sender
-    socket.to(data.lawnId).emit("receive_message", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`❌ Socket disconnected: ${socket.id}`);
-  });
-});
-
-// Attach io to req so controllers can use it
+// Attach io to req so controllers can emit events
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
 
 // ─── Security Middleware ──────────────────────────────────
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // allow images from Cloudinary
+    contentSecurityPolicy: false,                           // handled by frontend
+  })
+);
 
-// Rate limiting: max 100 requests per 15 minutes per IP
+// NoSQL injection sanitization
+app.use(sanitize);
+
+// Rate limiting: 100 requests per 15 minutes per IP
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max:      100,
-  message:  { message: "Too many requests, please try again later." },
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message: { success: false, message: "Too many requests, please try again later." },
+  skip: (req) => req.method === "OPTIONS", // skip preflight
 });
 app.use("/api", limiter);
 
 // ─── CORS ─────────────────────────────────────────────────
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin:      process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, cb) => {
+      // Allow non-browser requests (Postman, curl) and listed origins
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
   })
 );
@@ -97,19 +104,21 @@ app.get("/", (req, res) => {
 });
 
 // ─── API Routes ───────────────────────────────────────────
-app.use("/api/auth",     authRoutes);
-app.use("/api/lawns",    lawnRoutes);
+app.use("/api/auth",         authRoutes);
+app.use("/api/lawns",        lawnRoutes);
+app.use("/api/upload",       uploadRoutes);
+app.use("/api/availability", availabilityRoutes);
+app.use("/api/bookings",     bookingRoutes);
+app.use("/api/chat",         chatRoutes);
+app.use("/api/payment",      paymentRoutes);
+app.use("/api/admin",        adminRoutes);
 // app.use("/api/bookings", bookingRoutes);   // Day 10
 // app.use("/api/chat",     chatRoutes);      // Day 12
 // app.use("/api/payment",  paymentRoutes);   // Day 14
 // app.use("/api/upload",   uploadRoutes);    // Day 7
 
-// ─── 404 Handler ──────────────────────────────────────────
-app.use((req, res) => {
-  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
-});
-
-// ─── Global Error Handler (must be last) ─────────────────
+// ─── 404 & Global Error Handler ──────────────────────────
+app.use(notFound);
 app.use(errorHandler);
 
 // ─── Start Server ─────────────────────────────────────────

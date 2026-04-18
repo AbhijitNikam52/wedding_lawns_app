@@ -36,4 +36,9 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes
+paymentSchema.index({ bookingId: 1 });
+paymentSchema.index({ razorpayOrderId: 1 });
+paymentSchema.index({ status: 1 });
+
 module.exports = mongoose.model("Payment", paymentSchema);

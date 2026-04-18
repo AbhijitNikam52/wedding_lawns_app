@@ -1,5 +1,6 @@
-const jwt  = require("jsonwebtoken");
-const User = require("../models/User");
+const jwt         = require("jsonwebtoken");
+const User        = require("../models/User");
+const suspendCheck = require("./suspendCheck");
 
 // ─── Protect route: verify JWT ───────────────────────────
 const protect = async (req, res, next) => {
@@ -24,7 +25,8 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    next();
+    // Block suspended users immediately after auth
+    return suspendCheck(req, res, next);
   } catch (error) {
     return res.status(401).json({ message: "Token invalid or expired" });
   }

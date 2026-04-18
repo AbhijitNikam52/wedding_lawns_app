@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       type:    Boolean,
       default: false,
     },
+    isSuspended: {
+      type:    Boolean,
+      default: false,
+    },
     // Password reset (set when user requests forgot-password)
     resetPasswordToken:   { type: String, default: undefined },
     resetPasswordExpire:  { type: Date,   default: undefined },

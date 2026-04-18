@@ -19,7 +19,7 @@ const errorHandler = (err, req, res, next) => {
   // Mongoose validation error
   if (err.name === "ValidationError") {
     statusCode = 400;
-    message    = Object.values(err.errors).map(e => e.message).join(", ");
+    message    = Object.values(err.errors).map((e) => e.message).join(", ");
   }
 
   // JWT errors
@@ -29,7 +29,27 @@ const errorHandler = (err, req, res, next) => {
   }
   if (err.name === "TokenExpiredError") {
     statusCode = 401;
-    message    = "Token expired";
+    message    = "Token expired, please login again";
+  }
+
+  // Multer errors
+  if (err.code === "LIMIT_FILE_SIZE") {
+    statusCode = 400;
+    message    = "File too large. Maximum size is 5 MB.";
+  }
+  if (err.code === "LIMIT_FILE_COUNT") {
+    statusCode = 400;
+    message    = "Too many files. Maximum is 10 photos.";
+  }
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    statusCode = 400;
+    message    = "Unexpected field name. Use 'photos' as the field name.";
+  }
+
+  // CORS error
+  if (err.message?.startsWith("CORS:")) {
+    statusCode = 403;
+    message    = "Not allowed by CORS policy";
   }
 
   res.status(statusCode).json({

@@ -33,9 +33,17 @@ const Navbar = () => {
               <>
                 {/* Owner links */}
                 {isOwner && (
-                  <Link to="/dashboard/owner" className="hover:text-secondary transition-colors">
-                    My Dashboard
-                  </Link>
+                  <>
+                    <Link to="/dashboard/owner" className="hover:text-secondary transition-colors">
+                      My Dashboard
+                    </Link>
+                    <Link to="/bookings/owner" className="hover:text-secondary transition-colors">
+                      Bookings
+                    </Link>
+                    <Link to="/chat" className="hover:text-secondary transition-colors">
+                      Messages
+                    </Link>
+                  </>
                 )}
 
                 {/* Admin links */}
@@ -47,14 +55,27 @@ const Navbar = () => {
 
                 {/* User links */}
                 {!isOwner && !isAdmin && (
-                  <Link to="/bookings/my" className="hover:text-secondary transition-colors">
-                    My Bookings
-                  </Link>
+                  <>
+                    <Link to="/bookings/my" className="hover:text-secondary transition-colors">
+                      My Bookings
+                    </Link>
+                    <Link to="/chat" className="hover:text-secondary transition-colors">
+                      Messages
+                    </Link>
+                    <Link to="/payment/history" className="hover:text-secondary transition-colors">
+                      Payments
+                    </Link>
+                  </>
                 )}
 
-                {/* User avatar + logout */}
+                {/* User avatar + links */}
                 <div className="flex items-center gap-3">
-                  <span className="text-secondary">👤 {user?.name}</span>
+                  <Link
+                    to="/profile"
+                    className="text-secondary hover:text-white transition-colors font-medium"
+                  >
+                    👤 {user?.name}
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="bg-primary hover:bg-opacity-80 text-white px-4 py-1.5 rounded-lg text-sm transition-all"
